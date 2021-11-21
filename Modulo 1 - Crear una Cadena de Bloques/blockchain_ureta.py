@@ -37,7 +37,7 @@ class Blockchain:
         return block
     
     def get_previous_block(self):
-        return self.chain(-1)
+        return self.chain[-1]
     
     def proof_of_work(self, previous_proof):
         new_proof =1
@@ -76,6 +76,10 @@ class Blockchain:
 #crear una aplicación web
 
 app = Flask(__name__)
+#si se obtiene error 500, actualizar flask,reiniciar spyder
+#y ejecutar la siguiente linea
+#app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
 
 #crear una blockchain
 blockchain = Blockchain()
@@ -102,6 +106,24 @@ def get_chain():
     response = {'chain': blockchain.chain,
                 'length' : len(blockchain.chain)}
     return jsonify(response), 200
+
+# Comprobar si la cadena de bloques es válida
+@app.route('/is_valid', methods = ['GET'])
+def is_valid():
+    #usando función "is_chain_valid"
+    is_valid = blockchain.is_chain_valid(blockchain.chain)
+    if is_valid:
+        response = {'message' : 'La cadena de bloques es válida.'}
+    else:
+        response = {'message' : 'La cadena de bloques tiene un ligero error'}
+    return jsonify(response), 200  
+
+# ejecutar la app
+
+
+#levantar la instancia de flask
+
+app.run(host='0.0.0.0', port = 5000)
 
 
 
